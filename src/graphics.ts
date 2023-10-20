@@ -1,7 +1,6 @@
 import gm from "gm";
 import path from "path";
 import fs from "fs";
-import sharp from 'sharp'
 import { BufferResponse, ToBase64Response, WriteImageResponse } from './types/convertResponse';
 import { Options } from "./types/options";
 
@@ -78,12 +77,15 @@ export class Graphics {
           })
           .on("end", async () => {
             const buffer = Buffer.concat(buffers);
-            const bufferMetadata: sharp.Metadata = await sharp(buffer).metadata();
 
-            return resolve({
-              buffer: buffer,
-              size: `${bufferMetadata.width}x${bufferMetadata.height}`,
-              page: page + 1
+            this.gm(buffer).size((err, dimensions) => {
+              if (err) reject(err);
+
+              return resolve({
+                buffer: buffer,
+                size: `${dimensions.width}x${dimensions.height}`,
+                page: page + 1
+              });  
             });
           });
       });
@@ -100,14 +102,16 @@ export class Graphics {
           if (error) {
             return reject(error);
           }
-          const bufferMetadata: sharp.Metadata = await sharp(output).metadata();
+          this.gm(output).size((err, dimensions) => {
+            if (err) reject(err);
 
-          return resolve({
-            name: path.basename(output),
-            size: `${bufferMetadata.width}x${bufferMetadata.height}`,
-            fileSize: fs.statSync(output).size / 1000.0,
-            path: output,
-            page: page + 1
+            return resolve({
+              name: path.basename(output),
+              size: `${dimensions.width}x${dimensions.height}`,
+              fileSize: fs.statSync(output).size / 1000.0,
+              path: output,
+              page: page + 1
+            });
           });
         });
     });

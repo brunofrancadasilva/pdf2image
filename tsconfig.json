@@ -6,8 +6,6 @@
     "experimentalDecorators": true,
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
-    "moduleResolution": "NodeNext",
-    "module": "NodeNext",
     "sourceMap": false,
     "baseUrl": "src",
     "lib": [
