@@ -1,6 +1,7 @@
 import gm from "gm";
 import path from "path";
 import fs from "fs";
+import sharp from 'sharp'
 import { BufferResponse, ToBase64Response, WriteImageResponse } from './types/convertResponse';
 import { Options } from "./types/options";
 
@@ -75,10 +76,13 @@ export class Graphics {
           .on('data', (data) => {
             buffers.push(data);
           })
-          .on("end", () => {
+          .on("end", async () => {
+            const buffer = Buffer.concat(buffers);
+            const bufferMetadata: sharp.Metadata = await sharp(buffer).metadata();
+
             return resolve({
-              buffer: Buffer.concat(buffers),
-              size: `${this.width}x${this.height}`,
+              buffer: buffer,
+              size: `${bufferMetadata.width}x${bufferMetadata.height}`,
               page: page + 1
             });
           });
@@ -92,14 +96,15 @@ export class Graphics {
 
     return new Promise((resolve, reject) => {
       this.gmBaseCommand(stream, pageSetup)
-        .write(output, (error) => {
+        .write(output, async (error) => {
           if (error) {
             return reject(error);
           }
+          const bufferMetadata: sharp.Metadata = await sharp(output).metadata();
 
           return resolve({
             name: path.basename(output),
-            size: `${this.width}x${this.height}`,
+            size: `${bufferMetadata.width}x${bufferMetadata.height}`,
             fileSize: fs.statSync(output).size / 1000.0,
             path: output,
             page: page + 1
