@@ -59,8 +59,8 @@ export function pdf2picCore(source: string, data: string | Buffer, options = def
 
   convert.setOptions = (): void => setGMOptions(gm, options);
 
-  convert.setGMClass = (gmClass: string | boolean): void => {
-    gm.setGMClass(gmClass);
+  convert.setGMClass = (gmClass: string | boolean, gmPath?: string): void => {
+    gm.setGMClass(gmClass, gmPath);
 
     return;
   };
