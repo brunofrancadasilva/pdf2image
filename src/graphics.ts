@@ -190,9 +190,15 @@ export class Graphics {
     return this;
   }
 
-  public setGMClass(gmClass: string | boolean): Graphics {
+  public setGMClass(gmClass: string | boolean, gmPath?: string): Graphics {
     if (typeof gmClass === "boolean") {
-      this.gm = gm.subClass({ imageMagick: gmClass });
+      const params: { imageMagick: boolean, appPath?: string } = { imageMagick: gmClass };
+
+      if (gmPath) {
+        params.appPath = gmPath;
+      }
+      
+      this.gm = gm.subClass(params);
 
       return this;
     }
