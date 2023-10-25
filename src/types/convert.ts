@@ -22,5 +22,5 @@ export type Convert = {
 
   setOptions: () => void;
 
-  setGMClass: (gmClass: string | boolean) => void;
+  setGMClass: (gmClass: string | boolean, gmPath?: string) => void;
 }
