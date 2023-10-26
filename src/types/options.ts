@@ -8,4 +8,5 @@ export type Options = {
   saveFilename?: string;
   compression?: string;
   ignoreAspectRatio?: boolean;
+  verbose?: boolean;
 }

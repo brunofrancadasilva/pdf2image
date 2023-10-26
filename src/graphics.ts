@@ -23,6 +23,8 @@ export class Graphics {
 
   private ignoreAspectRatio = false;
 
+  private verbose = false;
+
   private gm: gm.SubClass = gm.subClass({ imageMagick: false });
 
   public generateValidFilename(page?: number): string {
@@ -67,6 +69,11 @@ export class Graphics {
       this.gmBaseCommand(stream, pageSetup).stream(this.format, (error, stdout) => {
         const buffers = [];
 
+        if (this.verbose) {
+          console.log('pdf error', error);
+          console.log('pdf stdout', stdout);
+        }
+
         if (error) {
           return reject(error);
         }
@@ -74,11 +81,28 @@ export class Graphics {
         stdout
           .on('data', (data) => {
             buffers.push(data);
+
+            if (this.verbose) {
+              console.log('pdf stdout data', data);
+            }
+          })
+          .on('error', (err) => {
+            if (this.verbose) {
+              console.log('pdf stdout err', err)
+            }
           })
           .on("end", async () => {
+            if (this.verbose) {
+              console.log('pdf buffers', buffers.length);
+            }
             const buffer = Buffer.concat(buffers);
 
             this.gm(buffer).size((err, dimensions) => {
+              if (this.verbose) {
+                console.log('pdf size err', err);
+                console.log('pdf size dimensions', dimensions);
+              }
+              
               if (err) reject(err);
 
               return resolve({
@@ -187,6 +211,12 @@ export class Graphics {
   public setCompression(compression: string): Graphics {
     this.compression = compression;
 
+    return this;
+  }
+
+  public setVerbose(verbose: boolean): Graphics {
+    this.verbose = verbose;
+    
     return this;
   }
 
