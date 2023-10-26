@@ -9,5 +9,6 @@ export const defaultOptions: Options = {
   ignoreAspectRatio: false,
   savePath: "./",
   saveFilename: "untitled",
-  compression: "jpeg"
+  compression: "jpeg",
+  verbose: false
 };
